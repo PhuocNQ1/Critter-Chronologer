@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.udacity.jdnd.course3.critter.DTO.CustomerDTO;
 import com.udacity.jdnd.course3.critter.Entity.Customer;
 
-@Service
 public interface CustomerService {
 
     CustomerDTO save(CustomerDTO customerDto);

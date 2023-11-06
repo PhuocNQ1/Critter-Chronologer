@@ -53,7 +53,7 @@ public class EmployeeServiceImpl implements EmployeeSevice {
         Optional<Employee> e = employeeRepository.findById(employeeId);
         if (e.isPresent()) {
             Employee e1 = e.get();
-            e1.setDateAvailable(daysAvailable);
+            e1.setEmployeeDaysAvailable(daysAvailable);
             employeeRepository.save(e1);
         } else {
             throw new EmployeeException("Not found Employee with id:" + employeeId);
@@ -92,11 +92,11 @@ public class EmployeeServiceImpl implements EmployeeSevice {
      */
     @Override
     public List<EmployeeDTO> getEmployeesBySkillsAndDaysAvailable(Set<EmployeeSkill> skills, DayOfWeek dayOfWeek) {
-        List<Employee> employeeList = employeeRepository.findAllByDaysAvailableAndSkillsIn(dayOfWeek, skills);
+        List<Employee> employeeList = employeeRepository.findAllByEmployeeDaysAvailableAndEmployeeSkillsIn(dayOfWeek, skills);
         List<EmployeeDTO> employeeDtoList = new ArrayList<>();
         if (employeeList != null) {
             employeeList.stream().distinct()
-                    .forEach(employee -> employeeDtoList.add(getEmployeeById(employee.getEmployee_id())));
+                    .forEach(employee -> employeeDtoList.add(getEmployeeById(employee.getEmployeeId())));
         }
         return employeeDtoList;
     }

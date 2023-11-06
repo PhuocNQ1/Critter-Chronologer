@@ -1,5 +1,6 @@
 package com.udacity.jdnd.course3.critter.Entity;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -19,42 +20,35 @@ import com.udacity.jdnd.course3.critter.Constant.PetType;
 public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long pet_id;
-
-    @Column
-    private String name;
+    private long petId;
 
     @Enumerated(EnumType.STRING)
     @Column
     private PetType petType;
 
-    @Column
-    private int age;
+    @Column(nullable = false)
+    private String petName;
 
     @Column
-    private String gender;
+    private LocalDate petBirthDate;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    @Column
+    private String petNotes;
 
     @ManyToMany(mappedBy = "pets", targetEntity = Schedule.class)
     private List<Schedule> schedules;
 
-    public long getPet_id() {
-        return pet_id;
+    @ManyToOne(targetEntity = Customer.class)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+
+    public long getPetId() {
+        return petId;
     }
 
-    public void setPet_id(long pet_id) {
-        this.pet_id = pet_id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setPetId(long petId) {
+        this.petId = petId;
     }
 
     public PetType getPetType() {
@@ -65,28 +59,28 @@ public class Pet {
         this.petType = petType;
     }
 
-    public int getAge() {
-        return age;
+    public String getPetName() {
+        return petName;
     }
 
-    public void setAge(int age) {
-        this.age = age;
+    public void setPetName(String petName) {
+        this.petName = petName;
     }
 
-    public String getGender() {
-        return gender;
+    public LocalDate getPetBirthDate() {
+        return petBirthDate;
     }
 
-    public void setGender(String gender) {
-        this.gender = gender;
+    public void setPetBirthDate(LocalDate petBirthDate) {
+        this.petBirthDate = petBirthDate;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public String getPetNotes() {
+        return petNotes;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setPetNotes(String petNotes) {
+        this.petNotes = petNotes;
     }
 
     public List<Schedule> getSchedules() {
@@ -97,4 +91,11 @@ public class Pet {
         this.schedules = schedules;
     }
 
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
 }

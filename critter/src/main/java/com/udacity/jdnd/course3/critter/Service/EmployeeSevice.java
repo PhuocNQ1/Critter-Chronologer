@@ -10,7 +10,6 @@ import com.udacity.jdnd.course3.critter.Constant.EmployeeSkill;
 import com.udacity.jdnd.course3.critter.DTO.EmployeeDTO;
 import com.udacity.jdnd.course3.critter.Entity.Employee;
 
-@Service
 public interface EmployeeSevice {
 
     EmployeeDTO save(EmployeeDTO employeeDto);

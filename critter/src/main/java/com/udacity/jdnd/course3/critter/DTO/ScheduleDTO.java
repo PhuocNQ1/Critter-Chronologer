@@ -11,18 +11,18 @@ import com.udacity.jdnd.course3.critter.Constant.EmployeeSkill;
  * map to the database directly.
  */
 public class ScheduleDTO {
-    private long schedule_id;
+    private long scheduleId;
     private List<Long> employeeIds;
     private List<Long> petIds;
-    private LocalDate date;
+    private LocalDate scheduleDate;
     private Set<EmployeeSkill> activities;
 
-    public long getId() {
-        return schedule_id;
+    public long getScheduleId() {
+        return scheduleId;
     }
 
-    public void setId(long id) {
-        this.schedule_id = id;
+    public void setScheduleId(long scheduleId) {
+        this.scheduleId = scheduleId;
     }
 
     public List<Long> getEmployeeIds() {
@@ -41,12 +41,12 @@ public class ScheduleDTO {
         this.petIds = petIds;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getScheduleDate() {
+        return scheduleDate;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setScheduleDate(LocalDate scheduleDate) {
+        this.scheduleDate = scheduleDate;
     }
 
     public Set<EmployeeSkill> getActivities() {

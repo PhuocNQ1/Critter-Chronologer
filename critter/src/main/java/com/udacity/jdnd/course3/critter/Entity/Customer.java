@@ -12,60 +12,59 @@ import javax.persistence.OneToMany;
 
 @Entity
 public class Customer {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long customer_id;
+    private long customerId;
+
+    @Column(nullable = false)
+    private String customerName;
 
     @Column
-    private String name;
+    private String customerPhoneNumber;
 
     @Column
-    private String phoneNumber;
-
-    @Column
-    private String notes;
+    private String customerNotes;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Pet> listPet;
+    private List<Pet> pets;
 
-    public long getCustomer_id() {
-        return customer_id;
+    public long getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomer_id(long customer_id) {
-        this.customer_id = customer_id;
+    public void setCustomerId(long customerId) {
+        this.customerId = customerId;
     }
 
-    public String getName() {
-        return name;
+    public String getCustomerName() {
+        return customerName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getCustomerPhoneNumber() {
+        return customerPhoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setCustomerPhoneNumber(String customerPhoneNumber) {
+        this.customerPhoneNumber = customerPhoneNumber;
     }
 
-    public String getNotes() {
-        return notes;
+    public String getCustomerNotes() {
+        return customerNotes;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public void setCustomerNotes(String customerNotes) {
+        this.customerNotes = customerNotes;
     }
 
-    public List<Pet> getListPet() {
-        return listPet;
+    public List<Pet> getPets() {
+        return pets;
     }
 
-    public void setListPet(List<Pet> listPet) {
-        this.listPet = listPet;
+    public void setPets(List<Pet> pets) {
+        this.pets = pets;
     }
 }

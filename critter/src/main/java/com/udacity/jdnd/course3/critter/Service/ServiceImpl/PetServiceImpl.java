@@ -35,22 +35,22 @@ public class PetServiceImpl implements PetService {
     /**
      * Save a pet's information including its owner.
      *
-     * @param petDTO The PetDTO object containing pet details.
+     * @param petDto The PetDTO object containing pet details.
      * @return A PetDTO object representing the saved pet.
      * @throws PetException If the owner (Customer) is not found with the specified
      *                      ID.
      */
     @Override
-    public PetDTO save(PetDTO PetDTO) {
-        Pet pet = modelMapper.map(PetDTO, Pet.class);
-        Optional<Customer> customer = customerRepository.findById(PetDTO.getOwnerId());
+    public PetDTO save(PetDTO petDto) {
+        Pet pet = modelMapper.map(petDto, Pet.class);
+        Optional<Customer> customer = customerRepository.findById(petDto.getOwnerId());
         if (customer.isPresent()) {
             pet.setCustomer(customer.get());
-            PetDTO = modelMapper.map(petRepository.save(pet), PetDTO.class);
-            PetDTO.setOwnerId(customer.get().getCustomer_id());
-            return PetDTO;
+            petDto = modelMapper.map(petRepository.save(pet), PetDTO.class);
+            petDto.setOwnerId(customer.get().getCustomerId());
+            return petDto;
         } else {
-            throw new PetException("Not found Customer with id:" + PetDTO.getOwnerId());
+            throw new PetException("Not found Customer with id:" + petDto.getOwnerId());
         }
     }
 
@@ -68,7 +68,7 @@ public class PetServiceImpl implements PetService {
         if (pet.isPresent()) {
             PetDTO = modelMapper.map(pet.get(), PetDTO.class);
             if (pet.get().getCustomer() != null) {
-                PetDTO.setOwnerId(pet.get().getCustomer().getCustomer_id());
+                PetDTO.setOwnerId(pet.get().getCustomer().getCustomerId());
             }
         } else {
             throw new PetException("Not found Pet with id:" + id);
@@ -88,7 +88,7 @@ public class PetServiceImpl implements PetService {
         List<Pet> petList = petRepository.findAll();
         List<PetDTO> PetDTOList = new ArrayList<>();
         if (petList != null) {
-            PetDTOList = petList.stream().map(pet -> getPetById(pet.getPet_id())).collect(Collectors.toList());
+            PetDTOList = petList.stream().map(pet -> getPetById(pet.getPetId())).collect(Collectors.toList());
         }
         return PetDTOList;
     }
@@ -106,7 +106,7 @@ public class PetServiceImpl implements PetService {
         List<Pet> petList = petRepository.findByCustomerId(customerId);
         List<PetDTO> PetDTOList = new ArrayList<>();
         if (petList != null) {
-            PetDTOList = petList.stream().map(pet -> getPetById(pet.getPet_id())).collect(Collectors.toList());
+            PetDTOList = petList.stream().map(pet -> getPetById(pet.getPetId())).collect(Collectors.toList());
         } else {
             throw new PetException("No pets found for customer with ID: " + customerId);
         }

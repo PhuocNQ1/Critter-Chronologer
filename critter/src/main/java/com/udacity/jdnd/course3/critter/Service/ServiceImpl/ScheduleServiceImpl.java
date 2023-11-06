@@ -59,7 +59,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             schedule.setEmployees(employeeList);
             schedule.setPets(petList);
             schedule = scheduleRepository.save(schedule);
-            scheduleDto.setId(schedule.getSchedule_id());
+            scheduleDto.setScheduleId(schedule.getScheduleId());
         } else {
             throw new ScheduleException("Not found Employee or Pet for this Schedule!");
         }
@@ -129,11 +129,11 @@ public class ScheduleServiceImpl implements ScheduleService {
             for (Schedule schedule : scheduleList) {
                 ScheduleDTO scheduleDto = modelMapper.map(schedule, ScheduleDTO.class);
                 if (schedule.getEmployees() != null) {
-                    scheduleDto.setEmployeeIds(schedule.getEmployees().stream().map(Employee::getEmployee_id)
+                    scheduleDto.setEmployeeIds(schedule.getEmployees().stream().map(Employee::getEmployeeId)
                             .collect(Collectors.toList()));
                 }
                 if (schedule.getPets() != null) {
-                    scheduleDto.setPetIds(schedule.getPets().stream().map(Pet::getPet_id).collect(Collectors.toList()));
+                    scheduleDto.setPetIds(schedule.getPets().stream().map(Pet::getPetId).collect(Collectors.toList()));
                 }
                 dtos.add(scheduleDto);
             }

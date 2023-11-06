@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.udacity.jdnd.course3.critter.DTO.PetDTO;
 import com.udacity.jdnd.course3.critter.Entity.Pet;
 
-@Service
 public interface PetService {
 
     PetDTO save(PetDTO petDto);

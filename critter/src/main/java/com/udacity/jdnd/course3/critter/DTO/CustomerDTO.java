@@ -7,42 +7,42 @@ import java.util.List;
  * map to the database directly.
  */
 public class CustomerDTO {
-    private long customer_id;
-    private String name;
-    private String phoneNumber;
-    private String notes;
+    private long customerId;
+    private String customerName;
+    private String customerPhoneNumber;
+    private String customerNotes;
     private List<Long> petIds;
 
-    public long getId() {
-        return customer_id;
+    public long getCustomerId() {
+        return customerId;
     }
 
-    public void setId(long id) {
-        this.customer_id = id;
+    public void setCustomerId(long customerId) {
+        this.customerId = customerId;
     }
 
-    public String getName() {
-        return name;
+    public String getCustomerName() {
+        return customerName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getCustomerPhoneNumber() {
+        return customerPhoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setCustomerPhoneNumber(String customerPhoneNumber) {
+        this.customerPhoneNumber = customerPhoneNumber;
     }
 
-    public String getNotes() {
-        return notes;
+    public String getCustomerNotes() {
+        return customerNotes;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public void setCustomerNotes(String customerNotes) {
+        this.customerNotes = customerNotes;
     }
 
     public List<Long> getPetIds() {

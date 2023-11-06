@@ -23,54 +23,54 @@ public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long employee_id;
+    private long employeeId;
 
     @Column(nullable = false)
-    private String name;
+    private String employeeName;
 
     @ElementCollection(targetClass = DayOfWeek.class)
     @CollectionTable(name = "employee_days_available", joinColumns = @JoinColumn(name = "employee_id"))
     @Enumerated(EnumType.STRING)
-    private Set<DayOfWeek> dateAvailable;
+    private Set<DayOfWeek> employeeDaysAvailable;
 
     @ElementCollection(targetClass = EmployeeSkill.class)
     @CollectionTable(name = "employee_skill", joinColumns = @JoinColumn(name = "employee_id"))
     @Enumerated(EnumType.STRING)
-    private Set<EmployeeSkill> skills;
+    private Set<EmployeeSkill> employeeSkills;
 
-    @ManyToMany(mappedBy = "employees", targetEntity = Schedule.class)
+    @ManyToMany(mappedBy = "employees")
     private List<Schedule> schedules;
 
-    public long getEmployee_id() {
-        return employee_id;
+    public long getEmployeeId() {
+        return employeeId;
     }
 
-    public void setEmployee_id(long employee_id) {
-        this.employee_id = employee_id;
+    public void setEmployeeId(long employeeId) {
+        this.employeeId = employeeId;
     }
 
-    public String getName() {
-        return name;
+    public String getEmployeeName() {
+        return employeeName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
     }
 
-    public Set<DayOfWeek> getDateAvailable() {
-        return dateAvailable;
+    public Set<DayOfWeek> getEmployeeDaysAvailable() {
+        return employeeDaysAvailable;
     }
 
-    public void setDateAvailable(Set<DayOfWeek> dateAvailable) {
-        this.dateAvailable = dateAvailable;
+    public void setEmployeeDaysAvailable(Set<DayOfWeek> employeeDaysAvailable) {
+        this.employeeDaysAvailable = employeeDaysAvailable;
     }
 
-    public Set<EmployeeSkill> getSkills() {
-        return skills;
+    public Set<EmployeeSkill> getEmployeeSkills() {
+        return employeeSkills;
     }
 
-    public void setSkills(Set<EmployeeSkill> skills) {
-        this.skills = skills;
+    public void setEmployeeSkills(Set<EmployeeSkill> employeeSkills) {
+        this.employeeSkills = employeeSkills;
     }
 
     public List<Schedule> getSchedules() {
@@ -80,5 +80,4 @@ public class Employee {
     public void setSchedules(List<Schedule> schedules) {
         this.schedules = schedules;
     }
-
 }

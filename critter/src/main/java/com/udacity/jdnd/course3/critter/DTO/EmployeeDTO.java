@@ -10,40 +10,40 @@ import com.udacity.jdnd.course3.critter.Constant.EmployeeSkill;
  * map to the database directly.
  */
 public class EmployeeDTO {
-    private long employee_id;
-    private String name;
-    private Set<EmployeeSkill> skills;
-    private Set<DayOfWeek> daysAvailable;
+    private long employeeId;
+    private String employeeName;
+    private Set<EmployeeSkill> employeeSkills;
+    private Set<DayOfWeek> employeeDaysAvailable;
 
-    public long getId() {
-        return employee_id;
+    public long getEmployeeId() {
+        return employeeId;
     }
 
-    public void setId(long id) {
-        this.employee_id = id;
+    public void setEmployeeId(long employeeId) {
+        this.employeeId = employeeId;
     }
 
-    public String getName() {
-        return name;
+    public String getEmployeeName() {
+        return employeeName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
     }
 
-    public Set<EmployeeSkill> getSkills() {
-        return skills;
+    public Set<EmployeeSkill> getEmployeeSkills() {
+        return employeeSkills;
     }
 
-    public void setSkills(Set<EmployeeSkill> skills) {
-        this.skills = skills;
+    public void setEmployeeSkills(Set<EmployeeSkill> employeeSkills) {
+        this.employeeSkills = employeeSkills;
     }
 
-    public Set<DayOfWeek> getDaysAvailable() {
-        return daysAvailable;
+    public Set<DayOfWeek> getEmployeeDaysAvailable() {
+        return employeeDaysAvailable;
     }
 
-    public void setDaysAvailable(Set<DayOfWeek> daysAvailable) {
-        this.daysAvailable = daysAvailable;
+    public void setEmployeeDaysAvailable(Set<DayOfWeek> employeeDaysAvailable) {
+        this.employeeDaysAvailable = employeeDaysAvailable;
     }
 }

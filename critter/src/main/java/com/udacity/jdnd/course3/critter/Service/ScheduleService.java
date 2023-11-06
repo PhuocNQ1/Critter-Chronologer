@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.udacity.jdnd.course3.critter.DTO.ScheduleDTO;
 
-@Service
 public interface ScheduleService {
 
     ScheduleDTO save(ScheduleDTO scheduleDto);

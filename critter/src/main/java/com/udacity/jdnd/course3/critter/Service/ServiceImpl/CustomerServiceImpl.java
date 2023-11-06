@@ -43,7 +43,7 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = modelMapper.map(customerDto, Customer.class);
         if (customerDto.getPetIds() != null) {
             List<Pet> petList = petRepository.findByPetIdIn(customerDto.getPetIds());
-            customer.setListPet(petList);
+            customer.setPets(petList);
         }
         return modelMapper.map(customerRepository.save(customer), CustomerDTO.class);
     }
@@ -62,9 +62,9 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerDTO customerDto = null;
         if (customer.isPresent()) {
             customerDto = modelMapper.map(customer.get(), CustomerDTO.class);
-            if (customer.get().getListPet() != null) {
+            if (customer.get().getPets() != null) {
                 customerDto.setPetIds(
-                        customer.get().getListPet().stream().map(Pet::getPet_id).collect(Collectors.toList()));
+                        customer.get().getPets().stream().map(Pet::getPetId).collect(Collectors.toList()));
             }
         } else {
             throw new CustomerException("Not found Customer with id:" + id);
@@ -82,7 +82,7 @@ public class CustomerServiceImpl implements CustomerService {
         List<Customer> customerList = customerRepository.findAll();
         List<CustomerDTO> customerDtoList = new ArrayList<>();
         if (customerList != null) {
-            customerList.stream().forEach(customer -> customerDtoList.add(getCustomerById(customer.getCustomer_id())));
+            customerList.stream().forEach(customer -> customerDtoList.add(getCustomerById(customer.getCustomerId())));
         }
         return customerDtoList;
     }

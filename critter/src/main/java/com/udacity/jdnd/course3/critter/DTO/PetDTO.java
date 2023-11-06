@@ -9,27 +9,35 @@ import com.udacity.jdnd.course3.critter.Constant.PetType;
  * the database directly.
  */
 public class PetDTO {
-    private long pet_id;
+    private long petId;
     private PetType petType;
-    private String name;
+    private String petName;
     private long ownerId;
-    private LocalDate birthDate;
-    private String notes;
+    private LocalDate petBirthDate;
+    private String petNotes;
 
-    public PetType getType() {
+    public long getPetId() {
+        return petId;
+    }
+
+    public void setPetId(long petId) {
+        this.petId = petId;
+    }
+
+    public PetType getPetType() {
         return petType;
     }
 
-    public void setType(PetType type) {
-        this.petType = type;
+    public void setPetType(PetType petType) {
+        this.petType = petType;
     }
 
-    public String getName() {
-        return name;
+    public String getPetName() {
+        return petName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPetName(String petName) {
+        this.petName = petName;
     }
 
     public long getOwnerId() {
@@ -40,27 +48,19 @@ public class PetDTO {
         this.ownerId = ownerId;
     }
 
-    public LocalDate getBirthDate() {
-        return birthDate;
+    public LocalDate getPetBirthDate() {
+        return petBirthDate;
     }
 
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
+    public void setPetBirthDate(LocalDate petBirthDate) {
+        this.petBirthDate = petBirthDate;
     }
 
-    public String getNotes() {
-        return notes;
+    public String getPetNotes() {
+        return petNotes;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public long getId() {
-        return pet_id;
-    }
-
-    public void setId(long id) {
-        this.pet_id = id;
+    public void setPetNotes(String petNotes) {
+        this.petNotes = petNotes;
     }
 }

@@ -13,8 +13,19 @@ import com.udacity.jdnd.course3.critter.Entity.Employee;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
-    List<Employee> findAllByDaysAvailableAndSkillsIn(DayOfWeek dayAvailable, Set<EmployeeSkill> skills);
+    /**
+     * JPA Query Methods
+     * @param dayAvailable
+     * @param skills
+     * @return
+     */
+    List<Employee> findAllByEmployeeDaysAvailableAndEmployeeSkillsIn(DayOfWeek dayAvailable, Set<EmployeeSkill> skills);
 
+    /**
+     * JPA Query Methods
+     * @param employeeIds
+     * @return
+     */
     List<Employee> findByEmployeeIdIn(List<Long> employeeIds);
 
 }
