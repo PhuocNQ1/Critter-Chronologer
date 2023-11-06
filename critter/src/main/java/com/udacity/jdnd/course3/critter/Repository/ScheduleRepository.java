@@ -16,7 +16,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
      * @param petId
      * @return
      */
-    @Query(value = "select * from schedule s where s.schedule_id in (select ps.schedule_id from pet_schedule ps where ps.pet_id = :petId)", nativeQuery = true)
+    @Query(value = "SELECT * FROM schedule s WHERE s.schedule_id IN (SELECT ps.schedule_id FROM pet_schedule ps WHERE ps.pet_id = :petId)", nativeQuery = true)
     List<Schedule> findByPets(Long petId);
 
     /**
@@ -24,6 +24,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
      * @param employeeId
      * @return
      */
-    @Query(value = "select * from schedule s where s.schedule_id in (select es.schedule_id from employee_schedule es where es.employee_id = :employeeId)", nativeQuery = true)
+    @Query(value = "SELECT * FROM schedule s WHERE s.schedule_id IN (SELECT es.schedule_id FROM employee_schedule es WHERE es.employee_id = :employeeId)", nativeQuery = true)
     List<Schedule> findByEmployees(Long employeeId);
 }

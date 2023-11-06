@@ -80,11 +80,11 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<CustomerDTO> getAllCustomers() {
         List<Customer> customerList = customerRepository.findAll();
-        List<CustomerDTO> customerDtoList = new ArrayList<>();
+        List<CustomerDTO> customerDTOList = new ArrayList<>();
         if (customerList != null) {
-            customerList.stream().forEach(customer -> customerDtoList.add(getCustomerById(customer.getCustomerId())));
+            customerList.stream().forEach(customer -> customerDTOList.add(getCustomerById(customer.getCustomerId())));
         }
-        return customerDtoList;
+        return customerDTOList;
     }
 
 }
