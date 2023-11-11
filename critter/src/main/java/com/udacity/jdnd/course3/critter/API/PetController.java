@@ -1,24 +1,22 @@
 package com.udacity.jdnd.course3.critter.API;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.udacity.jdnd.course3.critter.DTO.CustomerDTO;
+import com.udacity.jdnd.course3.critter.DTO.PetDTO;
+import com.udacity.jdnd.course3.critter.Entity.Customer;
+import com.udacity.jdnd.course3.critter.Entity.Pet;
+import com.udacity.jdnd.course3.critter.Service.CustomerService;
+import com.udacity.jdnd.course3.critter.Service.PetService;
+import com.udacity.jdnd.course3.critter.Utils.EntityDtoService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.udacity.jdnd.course3.critter.DTO.CustomerDTO;
-import com.udacity.jdnd.course3.critter.DTO.PetDTO;
-import com.udacity.jdnd.course3.critter.Service.CustomerService;
-import com.udacity.jdnd.course3.critter.Service.PetService;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Handles web requests related to Pets.
@@ -35,60 +33,64 @@ public class PetController {
     @Autowired
     private CustomerService customerService;
 
+    @Autowired
+    private EntityDtoService dtoService;
+
     @GetMapping
     public ResponseEntity<List<PetDTO>> getPets() {
         log.info("Request to get all pets");
-        List<PetDTO> pets = petService.getAllPets();
-        if (pets == null) {
-            log.warn("No pets found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        log.info("Returning a list of pets");
-        return ResponseEntity.ok((pets));
+        List<Pet> pets = petService.getAllPets();
+        return ResponseEntity.ok(dtoService.convertToPetDTOList(pets));
     }
 
     @PostMapping
     public ResponseEntity<PetDTO> savePet(@RequestBody PetDTO petDTO) {
-        log.info("Request to save a new pet");
-        PetDTO petDto = petService.save(petDTO);
-        log.info("Pet saved: " + petDto);
-        CustomerDTO customerById = customerService.getCustomerById(petDTO.getOwnerId());
-        List<PetDTO> pets = petService.getPetsByCustomerId(customerById.getCustomerId());
-        if (pets != null) {
-            if (customerById.getPetIds() == null) {
-                customerById.setPetIds(pets.stream().map(PetDTO::getPetId).collect(Collectors.toList()));
+        Pet pet = petService.save(dtoService.convertToEntity(petDTO));
+        Customer customerDto = customerService.getCustomerById(petDTO.getOwnerId());
+        List<Pet> petDtoList = petService.getPetsByCustomerId(customerDto.getCustomerId());
+        if (petDtoList != null) {
+            if (customerDto.getPets() == null) {
+                customerDto.setPets(petDtoList);
             } else {
-                List<Long> petIds = customerById.getPetIds();
-                petIds.addAll(pets.stream().map(PetDTO::getPetId).collect(Collectors.toList()));
-                customerById.setPetIds(petIds);
+                petDtoList.add(pet);
+                customerDto.setPets(petDtoList);
             }
-            customerService.save(customerById);
+            customerService.save(customerDto);
         }
-        log.info("Pet owner information updated: " + customerById);
-        return ResponseEntity.ok(petDto);
+        return ResponseEntity.ok(dtoService.convertToDTO(pet));
+
     }
 
     @GetMapping("/{petId}")
     public ResponseEntity<PetDTO> getPet(@PathVariable long petId) {
-        log.info("Request to get pet by ID: " + petId);
-        PetDTO petDto = petService.getPetById(petId);
-        if (petDto == null) {
-            log.warn("Pet not found with ID: " + petId);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        log.info("Request to get pet by ID: {}", petId);
+
+        try {
+            Optional<Pet> optionalPet = Optional.ofNullable(petService.getPetById(petId));
+            return optionalPet.map(pet -> ResponseEntity.ok(dtoService.convertToDTO(pet)))
+                    .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        } catch (Exception e) {
+            log.error("Error getting all customers", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        log.info("Returning pet: " + petDto);
-        return ResponseEntity.ok((petDto));
     }
 
     @GetMapping("/owner/{ownerId}")
     public ResponseEntity<List<PetDTO>> getPetsByOwner(@PathVariable long ownerId) {
         log.info("Request to get pets by owner ID: " + ownerId);
-        List<PetDTO> petDtoList = petService.getPetsByCustomerId(ownerId);
-        if (petDtoList == null) {
-            log.warn("No pets found for owner with ID: " + ownerId);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+        try {
+            List<Pet> petList = petService.getPetsByCustomerId(ownerId);
+            if (petList == null) {
+                log.warn("No pets found for owner with ID: " + ownerId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            log.info("Returning pets for owner with ID: " + ownerId);
+            List<PetDTO> petsDto = dtoService.convertToPetDTOList(petList);
+            return ResponseEntity.ok((petsDto));
+        } catch (Exception e) {
+            log.error("Error getting all customers", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        log.info("Returning pets for owner with ID: " + ownerId);
-        return ResponseEntity.ok((petDtoList));
     }
 }

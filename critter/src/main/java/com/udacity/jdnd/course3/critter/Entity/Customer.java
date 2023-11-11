@@ -1,14 +1,7 @@
 package com.udacity.jdnd.course3.critter.Entity;
 
+import javax.persistence.*;
 import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 @Entity
 public class Customer {
@@ -25,7 +18,7 @@ public class Customer {
     @Column
     private String customerNotes;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "customer")
     private List<Pet> pets;
 
     public long getCustomerId() {

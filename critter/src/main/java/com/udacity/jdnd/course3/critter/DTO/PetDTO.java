@@ -1,8 +1,8 @@
 package com.udacity.jdnd.course3.critter.DTO;
 
-import java.time.LocalDate;
-
 import com.udacity.jdnd.course3.critter.Constant.PetType;
+
+import java.time.LocalDate;
 
 /**
  * Represents the form that pet request and response data takes. Does not map to

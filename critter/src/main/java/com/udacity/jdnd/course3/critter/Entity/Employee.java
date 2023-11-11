@@ -1,22 +1,11 @@
 package com.udacity.jdnd.course3.critter.Entity;
 
+import com.udacity.jdnd.course3.critter.Constant.EmployeeSkill;
+
+import javax.persistence.*;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Set;
-
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-
-import com.udacity.jdnd.course3.critter.Constant.EmployeeSkill;
 
 @Entity
 public class Employee {

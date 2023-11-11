@@ -1,20 +1,10 @@
 package com.udacity.jdnd.course3.critter.Entity;
 
+import com.udacity.jdnd.course3.critter.Constant.PetType;
+
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-
-import com.udacity.jdnd.course3.critter.Constant.PetType;
 
 @Entity
 public class Pet {

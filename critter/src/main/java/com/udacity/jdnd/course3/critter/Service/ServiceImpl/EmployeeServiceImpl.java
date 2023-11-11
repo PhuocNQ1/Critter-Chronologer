@@ -1,23 +1,19 @@
 package com.udacity.jdnd.course3.critter.Service.ServiceImpl;
 
-import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.transaction.Transactional;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.udacity.jdnd.course3.critter.Constant.EmployeeSkill;
-import com.udacity.jdnd.course3.critter.DTO.EmployeeDTO;
 import com.udacity.jdnd.course3.critter.Entity.Employee;
 import com.udacity.jdnd.course3.critter.Exception.EmployeeException;
 import com.udacity.jdnd.course3.critter.Repository.EmployeeRepository;
 import com.udacity.jdnd.course3.critter.Service.EmployeeSevice;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.time.DayOfWeek;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Transactional
 @Service
@@ -33,9 +29,9 @@ public class EmployeeServiceImpl implements EmployeeSevice {
      * Save Employee
      */
     @Override
-    public EmployeeDTO save(EmployeeDTO employeeDto) {
+    public Employee save(Employee employeeDto) {
         Employee e = modelMapper.map(employeeDto, Employee.class);
-        return modelMapper.map(employeeRepository.save(e), EmployeeDTO.class);
+        return employeeRepository.saveAndFlush(e);
     }
 
     /**
@@ -52,9 +48,9 @@ public class EmployeeServiceImpl implements EmployeeSevice {
     public Long saveEmployeeDaysAvailable(Set<DayOfWeek> daysAvailable, Long employeeId) {
         Optional<Employee> e = employeeRepository.findById(employeeId);
         if (e.isPresent()) {
-            Employee e1 = e.get();
-            e1.setEmployeeDaysAvailable(daysAvailable);
-            employeeRepository.save(e1);
+            Employee employee = e.get();
+            employee.setEmployeeDaysAvailable(daysAvailable);
+            employeeRepository.save(employee);
         } else {
             throw new EmployeeException("Not found Employee with id:" + employeeId);
         }
@@ -69,15 +65,13 @@ public class EmployeeServiceImpl implements EmployeeSevice {
      * @throws EmployeeException If no employee with the corresponding ID is found.
      */
     @Override
-    public EmployeeDTO getEmployeeById(Long id) {
-        Optional<Employee> e = employeeRepository.findById(id);
-        Employee e1 = null;
-        if (e.isPresent()) {
-            e1 = e.get();
+    public Employee getEmployeeById(Long id) {
+        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+        if (optionalEmployee.isPresent()) {
+            return optionalEmployee.get();
         } else {
             throw new EmployeeException("Not found Employee with id:" + id);
         }
-        return modelMapper.map(e1, EmployeeDTO.class);
     }
 
     /**
@@ -88,17 +82,11 @@ public class EmployeeServiceImpl implements EmployeeSevice {
      * @param dayOfWeek The specific day of the week when employees should be
      *                  available.
      * @return A list of EmployeeDTOs containing information about employees who
-     *         meet the criteria.
+     * meet the criteria.
      */
     @Override
-    public List<EmployeeDTO> getEmployeesBySkillsAndDaysAvailable(Set<EmployeeSkill> skills, DayOfWeek dayOfWeek) {
-        List<Employee> employeeList = employeeRepository.findAllByEmployeeDaysAvailableAndEmployeeSkillsIn(dayOfWeek, skills);
-        List<EmployeeDTO> employeeDtoList = new ArrayList<>();
-        if (employeeList != null) {
-            employeeList.stream().distinct()
-                    .forEach(employee -> employeeDtoList.add(getEmployeeById(employee.getEmployeeId())));
-        }
-        return employeeDtoList;
+    public List<Employee> getEmployeesBySkillsAndDaysAvailable(Set<EmployeeSkill> skills, DayOfWeek dayOfWeek) {
+        return employeeRepository.findAllByEmployeeDaysAvailableAndEmployeeSkillsIn(dayOfWeek, skills);
     }
 
     /**
@@ -106,7 +94,7 @@ public class EmployeeServiceImpl implements EmployeeSevice {
      *
      * @param employeeIds The list of unique employee IDs to retrieve employees.
      * @return A list of EmployeeDTOs containing information about the selected
-     *         employees.
+     * employees.
      */
     @Override
     public List<Employee> getEmployeesByEmployeeIds(List<Long> employeeIds) {

@@ -1,22 +1,18 @@
 package com.udacity.jdnd.course3.critter.Service;
 
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.stereotype.Service;
-
-import com.udacity.jdnd.course3.critter.DTO.PetDTO;
 import com.udacity.jdnd.course3.critter.Entity.Pet;
+
+import java.util.List;
 
 public interface PetService {
 
-    PetDTO save(PetDTO petDto);
+    Pet save(Pet petDto);
 
-    PetDTO getPetById(Long id);
+    Pet getPetById(Long id);
 
-    List<PetDTO> getAllPets();
+    List<Pet> getAllPets();
 
-    List<PetDTO> getPetsByCustomerId(Long customerId);
+    List<Pet> getPetsByCustomerId(Long customerId);
 
     List<Pet> getPetsByPetIds(List<Long> petIds);
 

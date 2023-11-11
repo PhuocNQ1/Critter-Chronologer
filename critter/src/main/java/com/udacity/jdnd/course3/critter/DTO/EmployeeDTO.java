@@ -1,9 +1,9 @@
 package com.udacity.jdnd.course3.critter.DTO;
 
+import com.udacity.jdnd.course3.critter.Constant.EmployeeSkill;
+
 import java.time.DayOfWeek;
 import java.util.Set;
-
-import com.udacity.jdnd.course3.critter.Constant.EmployeeSkill;
 
 /**
  * Represents the form that employee request and response data takes. Does not

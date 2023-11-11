@@ -1,10 +1,10 @@
 package com.udacity.jdnd.course3.critter.DTO;
 
+import com.udacity.jdnd.course3.critter.Constant.EmployeeSkill;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
-
-import com.udacity.jdnd.course3.critter.Constant.EmployeeSkill;
 
 /**
  * Represents the form that schedule request and response data takes. Does not

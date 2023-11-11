@@ -3,13 +3,16 @@ package com.udacity.jdnd.course3.critter.API;
 import com.udacity.jdnd.course3.critter.DTO.CustomerDTO;
 import com.udacity.jdnd.course3.critter.DTO.EmployeeDTO;
 import com.udacity.jdnd.course3.critter.DTO.EmployeeRequestDTO;
-import com.udacity.jdnd.course3.critter.DTO.PetDTO;
+import com.udacity.jdnd.course3.critter.Entity.Customer;
+import com.udacity.jdnd.course3.critter.Entity.Employee;
+import com.udacity.jdnd.course3.critter.Entity.Pet;
 import com.udacity.jdnd.course3.critter.Exception.CustomerException;
 import com.udacity.jdnd.course3.critter.Exception.EmployeeException;
 import com.udacity.jdnd.course3.critter.Exception.PetException;
 import com.udacity.jdnd.course3.critter.Service.CustomerService;
 import com.udacity.jdnd.course3.critter.Service.EmployeeSevice;
 import com.udacity.jdnd.course3.critter.Service.PetService;
+import com.udacity.jdnd.course3.critter.Utils.EntityDtoService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Handles web requests related to Users.
@@ -43,84 +47,135 @@ public class UserController {
     @Autowired
     private PetService petService;
 
+    @Autowired
+    private EntityDtoService dtoService;
+
     @GetMapping("/customer")
     public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
         log.info("Request to get all customers");
-        List<CustomerDTO> allCustomers = customerService.getAllCustomers();
-        if (allCustomers == null) {
-            log.warn("No customers found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+        try {
+            List<Customer> allCustomers = customerService.getAllCustomers();
+
+            if (allCustomers.isEmpty()) {
+                log.warn("No customers found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            List<CustomerDTO> customerDTOS = allCustomers.stream()
+                    .map(customer -> dtoService.convertToDTO(customer))
+                    .collect(Collectors.toList());
+
+            log.info("Returning a list of customers");
+            return ResponseEntity.ok(customerDTOS);
+        } catch (Exception e) {
+            log.error("Error getting all customers", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        log.info("Returning a list of customers");
-        return ResponseEntity.ok(allCustomers);
     }
 
     @PostMapping("/customer")
     public ResponseEntity<CustomerDTO> saveCustomer(@RequestBody CustomerDTO customerDTO) {
         log.info("Request to save a new customer");
-        CustomerDTO savedCustomer = customerService.save(customerDTO);
-        log.info("Customer saved: " + savedCustomer);
-        return ResponseEntity.ok(savedCustomer);
+
+        try {
+            Customer savedCustomer = customerService.save(dtoService.convertToEntity(customerDTO));
+            log.info("Customer saved: {}", savedCustomer);
+
+            CustomerDTO savedCustomerDTO = dtoService.convertToDTO(savedCustomer);
+
+            return ResponseEntity.ok(savedCustomerDTO);
+        } catch (Exception e) {
+            log.error("Error saving customer", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/customer/pet/{petId}")
     public ResponseEntity<CustomerDTO> getOwnerByPet(@PathVariable long petId) {
-        log.info("Request to get owner by pet ID: " + petId);
-        PetDTO petDto = null;
-        CustomerDTO customerDto = null;
         try {
-            petDto = petService.getPetById(petId);
-            customerDto = customerService.getCustomerById(petDto.getOwnerId());
+            Pet pet = petService.getPetById(petId);
+
+            if (pet != null) {
+                Customer customer = customerService.getCustomerById(pet.getCustomer().getCustomerId());
+
+                log.info("Returning owner information for pet with ID: {}", petId);
+                return ResponseEntity.ok(dtoService.convertToDTO(customer));
+            } else {
+                log.warn("Pet not found with ID: {}", petId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
         } catch (PetException | CustomerException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            log.error("Error getting owner information for pet with ID: {}", petId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        log.info("Returning owner information for pet with ID: " + petId);
-        return ResponseEntity.ok(customerDto);
     }
 
     @PostMapping("/employee")
     public ResponseEntity<EmployeeDTO> saveEmployee(@RequestBody EmployeeDTO employeeDTO) {
         log.info("Request to save a new employee");
-        EmployeeDTO savedEmployee = employeeService.save(employeeDTO);
-        log.info("Employee saved: " + savedEmployee);
-        return ResponseEntity.ok(savedEmployee);
+        try {
+            Employee savedEmployee = employeeService.save(dtoService.convertToEntity(employeeDTO));
+
+            log.info("Employee saved: " + savedEmployee);
+            return ResponseEntity.ok(dtoService.convertToDTO(savedEmployee));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping("/employee/{employeeId}")
     public ResponseEntity<EmployeeDTO> getEmployee(@PathVariable long employeeId) {
-        log.info("Request to get employee by ID: " + employeeId);
-        EmployeeDTO employeeById = null;
+        log.info("Request to get employee by ID: {}", employeeId);
+
         try {
-            employeeById = employeeService.getEmployeeById(employeeId);
+            Employee employeeById = employeeService.getEmployeeById(employeeId);
+
+            if (employeeById != null) {
+                log.info("Returning employee with ID: {}", employeeId);
+                return ResponseEntity.ok(dtoService.convertToDTO(employeeById));
+            } else {
+                log.warn("Employee not found with ID: {}", employeeId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
         } catch (EmployeeException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            log.error("Error getting employee with ID: {}", employeeId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        log.info("Returning employee with ID: " + employeeId);
-        return ResponseEntity.ok(employeeById);
     }
 
     @GetMapping("/employee/availability")
     public ResponseEntity<List<EmployeeDTO>> findEmployeesForService(@RequestBody EmployeeRequestDTO employeeDTO) {
         log.info("Request to find employees by skills and availability");
-        List<EmployeeDTO> employeeDtoList = employeeService.getEmployeesBySkillsAndDaysAvailable(employeeDTO.getSkills(), employeeDTO.getDate().getDayOfWeek());
-        if (employeeDtoList == null) {
-            log.warn("No employees found for the specified criteria");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        try {
+            List<Employee> employeeList = employeeService.getEmployeesBySkillsAndDaysAvailable(
+                    employeeDTO.getSkills(), employeeDTO.getDate().getDayOfWeek());
+
+            if (employeeList.isEmpty()) {
+                log.warn("No employees found for the specified criteria");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            List<EmployeeDTO> employeeDTOList = employeeList.stream()
+                    .map(employee -> dtoService.convertToDTO(employee))
+                    .collect(Collectors.toList());
+
+            log.info("Returning a list of employees");
+            return ResponseEntity.ok(employeeDTOList);
+        } catch (Exception e) {
+            log.error("Error finding employees", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-        log.info("Returning a list of employees");
-        return ResponseEntity.ok(employeeDtoList);
     }
 
     @PutMapping("/employee/{employeeId}")
     public void setAvailability(@RequestBody Set<DayOfWeek> daysAvailable, @PathVariable long employeeId) {
-        log.info("Request to set availability for employee with ID: " + employeeId);
+        log.info("Request to set availability for employee with ID: {}", employeeId);
         try {
             employeeService.saveEmployeeDaysAvailable(daysAvailable, employeeId);
-            log.info("Availability set for employee with ID: " + employeeId);
+            log.info("Availability set for employee with ID: {}", employeeId);
         } catch (EmployeeException e) {
-            log.error(e.getMessage());
+            log.error("Error setting availability for employee with ID: {}", employeeId, e);
         }
     }
 

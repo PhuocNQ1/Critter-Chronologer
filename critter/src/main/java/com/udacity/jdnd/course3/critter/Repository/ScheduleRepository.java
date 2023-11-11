@@ -1,18 +1,18 @@
 package com.udacity.jdnd.course3.critter.Repository;
 
-import java.util.List;
-
+import com.udacity.jdnd.course3.critter.Entity.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.udacity.jdnd.course3.critter.Entity.Schedule;
+import java.util.List;
 
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     /**
      * SQL Native Query
+     *
      * @param petId
      * @return
      */
@@ -21,6 +21,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     /**
      * SQL Native Query
+     *
      * @param employeeId
      * @return
      */

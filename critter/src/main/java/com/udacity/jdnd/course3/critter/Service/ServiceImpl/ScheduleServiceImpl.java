@@ -1,17 +1,6 @@
 package com.udacity.jdnd.course3.critter.Service.ServiceImpl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.transaction.Transactional;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.udacity.jdnd.course3.critter.DTO.CustomerDTO;
-import com.udacity.jdnd.course3.critter.DTO.ScheduleDTO;
+import com.udacity.jdnd.course3.critter.Entity.Customer;
 import com.udacity.jdnd.course3.critter.Entity.Employee;
 import com.udacity.jdnd.course3.critter.Entity.Pet;
 import com.udacity.jdnd.course3.critter.Entity.Schedule;
@@ -21,6 +10,14 @@ import com.udacity.jdnd.course3.critter.Service.CustomerService;
 import com.udacity.jdnd.course3.critter.Service.EmployeeSevice;
 import com.udacity.jdnd.course3.critter.Service.PetService;
 import com.udacity.jdnd.course3.critter.Service.ScheduleService;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -44,26 +41,29 @@ public class ScheduleServiceImpl implements ScheduleService {
     /**
      * Save a schedule, associating employees and pets with it.
      *
-     * @param scheduleDto The ScheduleDTO object containing schedule details and
-     *                    associated employees and pets.
+     * @param schedule The ScheduleDTO object containing schedule details and
+     *                 associated employees and pets.
      * @return A ScheduleDTO object representing the saved schedule.
      * @throws ScheduleException If employees or pets are not found for the
      *                           schedule.
      */
     @Override
-    public ScheduleDTO save(ScheduleDTO scheduleDto) {
-        List<Employee> employeeList = employeeService.getEmployeesByEmployeeIds(scheduleDto.getEmployeeIds());
-        List<Pet> petList = petService.getPetsByPetIds(scheduleDto.getPetIds());
-        Schedule schedule = modelMapper.map(scheduleDto, Schedule.class);
+    public Schedule save(Schedule schedule) {
+        List<Long> employeeIds = schedule.getEmployees().stream().map(Employee::getEmployeeId).collect(Collectors.toList());
+        List<Employee> employeeList = employeeService.getEmployeesByEmployeeIds(employeeIds);
+
+        List<Long> petIds = schedule.getPets().stream().map(Pet::getPetId).collect(Collectors.toList());
+        List<Pet> petList = petService.getPetsByPetIds(petIds);
+
         if (employeeList != null && petList != null) {
             schedule.setEmployees(employeeList);
             schedule.setPets(petList);
-            schedule = scheduleRepository.save(schedule);
-            scheduleDto.setScheduleId(schedule.getScheduleId());
+            schedule = scheduleRepository.saveAndFlush(schedule);
+            schedule.setScheduleId(schedule.getScheduleId());
         } else {
             throw new ScheduleException("Not found Employee or Pet for this Schedule!");
         }
-        return scheduleDto;
+        return schedule;
     }
 
     /**
@@ -71,11 +71,11 @@ public class ScheduleServiceImpl implements ScheduleService {
      *
      * @param petId The ID of the pet to filter schedules by.
      * @return A list of ScheduleDTOs containing information about the schedules
-     *         associated with the pet.
+     * associated with the pet.
      */
     @Override
-    public List<ScheduleDTO> getScheduleByPetId(Long petId) {
-        return convertListScheduleToListScheduleDto(scheduleRepository.findByPets(petId));
+    public List<Schedule> getScheduleByPetId(Long petId) {
+        return scheduleRepository.findByPets(petId);
     }
 
     /**
@@ -83,11 +83,11 @@ public class ScheduleServiceImpl implements ScheduleService {
      *
      * @param employeeId The ID of the employee to filter schedules by.
      * @return A list of ScheduleDTOs containing information about the schedules
-     *         associated with the employee.
+     * associated with the employee.
      */
     @Override
-    public List<ScheduleDTO> getScheduleByEmployeeId(Long employeeId) {
-        return convertListScheduleToListScheduleDto(scheduleRepository.findByEmployees(employeeId));
+    public List<Schedule> getScheduleByEmployeeId(Long employeeId) {
+        return scheduleRepository.findByEmployees(employeeId);
     }
 
     /**
@@ -96,8 +96,8 @@ public class ScheduleServiceImpl implements ScheduleService {
      * @return A list of ScheduleDTOs containing information about all schedules.
      */
     @Override
-    public List<ScheduleDTO> getAllSchedules() {
-        return convertListScheduleToListScheduleDto(scheduleRepository.findAll());
+    public List<Schedule> getAllSchedules() {
+        return scheduleRepository.findAll();
     }
 
     /**
@@ -105,40 +105,17 @@ public class ScheduleServiceImpl implements ScheduleService {
      *
      * @param customerId The ID of the customer to filter schedules by.
      * @return A list of ScheduleDTOs containing information about the schedules
-     *         associated with the customer's pets.
+     * associated with the customer's pets.
      */
     @Override
-    public List<ScheduleDTO> getScheduleByCustomerId(Long customerId) {
-        CustomerDTO customerDto = customerService.getCustomerById(customerId);
-        List<ScheduleDTO> scheduleDtoList = new ArrayList<>();
-        if (customerDto != null && !customerDto.getPetIds().isEmpty()) {
-            customerDto.getPetIds().forEach(petId -> scheduleDtoList.addAll(getScheduleByPetId(petId)));
+    public List<Schedule> getScheduleByCustomerId(Long customerId) {
+        Customer customer = customerService.getCustomerById(customerId);
+        List<Schedule> scheduleList = new ArrayList<>();
+        List<Long> petIds = customer.getPets().stream().map(Pet::getPetId).collect(Collectors.toList());
+        if (customer != null && customer.getPets() != null) {
+            petIds.forEach(petId -> scheduleList.addAll(getScheduleByPetId(petId)));
         }
-        return scheduleDtoList;
-    }
-
-    /**
-     * Convert a list of Schedule entities to a list of ScheduleDTOs.
-     *
-     * @param scheduleList The list of Schedule entities to be converted.
-     * @return A list of ScheduleDTOs containing information about the schedules.
-     */
-    private List<ScheduleDTO> convertListScheduleToListScheduleDto(List<Schedule> scheduleList) {
-        List<ScheduleDTO> dtos = new ArrayList<>();
-        if (scheduleList != null) {
-            for (Schedule schedule : scheduleList) {
-                ScheduleDTO scheduleDto = modelMapper.map(schedule, ScheduleDTO.class);
-                if (schedule.getEmployees() != null) {
-                    scheduleDto.setEmployeeIds(schedule.getEmployees().stream().map(Employee::getEmployeeId)
-                            .collect(Collectors.toList()));
-                }
-                if (schedule.getPets() != null) {
-                    scheduleDto.setPetIds(schedule.getPets().stream().map(Pet::getPetId).collect(Collectors.toList()));
-                }
-                dtos.add(scheduleDto);
-            }
-        }
-        return dtos;
+        return scheduleList;
     }
 
 }

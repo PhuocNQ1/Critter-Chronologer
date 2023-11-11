@@ -1,18 +1,5 @@
 package com.udacity.jdnd.course3.critter;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.udacity.jdnd.course3.critter.API.PetController;
@@ -20,11 +7,19 @@ import com.udacity.jdnd.course3.critter.API.ScheduleController;
 import com.udacity.jdnd.course3.critter.API.UserController;
 import com.udacity.jdnd.course3.critter.Constant.EmployeeSkill;
 import com.udacity.jdnd.course3.critter.Constant.PetType;
-import com.udacity.jdnd.course3.critter.DTO.CustomerDTO;
-import com.udacity.jdnd.course3.critter.DTO.EmployeeDTO;
-import com.udacity.jdnd.course3.critter.DTO.EmployeeRequestDTO;
-import com.udacity.jdnd.course3.critter.DTO.PetDTO;
-import com.udacity.jdnd.course3.critter.DTO.ScheduleDTO;
+import com.udacity.jdnd.course3.critter.DTO.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * This is a set of functional tests to validate the basic capabilities desired
@@ -33,7 +28,7 @@ import com.udacity.jdnd.course3.critter.DTO.ScheduleDTO;
  * directory that specifies the datasource. It can run using an in-memory H2
  * instance and should not try to re-use the same datasource used by the rest of
  * the app.
- *
+ * <p>
  * These tests should all pass once the project is complete.
  */
 @Transactional
@@ -48,6 +43,51 @@ public class CritterFunctionalTest {
 
     @Autowired
     private ScheduleController scheduleController;
+
+    private static EmployeeDTO createEmployeeDTO() {
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        employeeDTO.setEmployeeName("TestEmployee");
+        employeeDTO.setEmployeeSkills(Sets.newHashSet(EmployeeSkill.FEEDING, EmployeeSkill.PETTING));
+        return employeeDTO;
+    }
+
+    private static CustomerDTO createCustomerDTO() {
+        CustomerDTO customerDTO = new CustomerDTO();
+        customerDTO.setCustomerName("TestEmployee");
+        customerDTO.setCustomerPhoneNumber("123-456-789");
+        return customerDTO;
+    }
+
+    private static PetDTO createPetDTO() {
+        PetDTO petDTO = new PetDTO();
+        petDTO.setPetName("TestPet");
+        petDTO.setPetType(PetType.CAT);
+        return petDTO;
+    }
+
+    private static EmployeeRequestDTO createEmployeeRequestDTO() {
+        EmployeeRequestDTO employeeRequestDTO = new EmployeeRequestDTO();
+        employeeRequestDTO.setDate(LocalDate.of(2019, 12, 25));
+        employeeRequestDTO.setSkills(Sets.newHashSet(EmployeeSkill.FEEDING, EmployeeSkill.WALKING));
+        return employeeRequestDTO;
+    }
+
+    private static ScheduleDTO createScheduleDTO(List<Long> petIds, List<Long> employeeIds, LocalDate date,
+                                                 Set<EmployeeSkill> activities) {
+        ScheduleDTO scheduleDTO = new ScheduleDTO();
+        scheduleDTO.setPetIds(petIds);
+        scheduleDTO.setEmployeeIds(employeeIds);
+        scheduleDTO.setScheduleDate(date);
+        scheduleDTO.setActivities(activities);
+        return scheduleDTO;
+    }
+
+    private static void compareSchedules(ScheduleDTO sched1, ScheduleDTO sched2) {
+        Assertions.assertEquals(sched1.getPetIds(), sched2.getPetIds());
+        Assertions.assertEquals(sched1.getActivities(), sched2.getActivities());
+        Assertions.assertEquals(sched1.getEmployeeIds(), sched2.getEmployeeIds());
+        Assertions.assertEquals(sched1.getScheduleDate(), sched2.getScheduleDate());
+    }
 
     @Test
     public void testCreateCustomer() {
@@ -256,44 +296,6 @@ public class CritterFunctionalTest {
         compareSchedules(sched3, scheds2c.get(1));
     }
 
-    private static EmployeeDTO createEmployeeDTO() {
-        EmployeeDTO employeeDTO = new EmployeeDTO();
-        employeeDTO.setEmployeeName("TestEmployee");
-        employeeDTO.setEmployeeSkills(Sets.newHashSet(EmployeeSkill.FEEDING, EmployeeSkill.PETTING));
-        return employeeDTO;
-    }
-
-    private static CustomerDTO createCustomerDTO() {
-        CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setCustomerName("TestEmployee");
-        customerDTO.setCustomerPhoneNumber("123-456-789");
-        return customerDTO;
-    }
-
-    private static PetDTO createPetDTO() {
-        PetDTO petDTO = new PetDTO();
-        petDTO.setPetName("TestPet");
-        petDTO.setPetType(PetType.CAT);
-        return petDTO;
-    }
-
-    private static EmployeeRequestDTO createEmployeeRequestDTO() {
-        EmployeeRequestDTO employeeRequestDTO = new EmployeeRequestDTO();
-        employeeRequestDTO.setDate(LocalDate.of(2019, 12, 25));
-        employeeRequestDTO.setSkills(Sets.newHashSet(EmployeeSkill.FEEDING, EmployeeSkill.WALKING));
-        return employeeRequestDTO;
-    }
-
-    private static ScheduleDTO createScheduleDTO(List<Long> petIds, List<Long> employeeIds, LocalDate date,
-            Set<EmployeeSkill> activities) {
-        ScheduleDTO scheduleDTO = new ScheduleDTO();
-        scheduleDTO.setPetIds(petIds);
-        scheduleDTO.setEmployeeIds(employeeIds);
-        scheduleDTO.setScheduleDate(date);
-        scheduleDTO.setActivities(activities);
-        return scheduleDTO;
-    }
-
     private ScheduleDTO populateSchedule(int numEmployees, int numPets, LocalDate date, Set<EmployeeSkill> activities) {
         List<Long> employeeIds = IntStream.range(0, numEmployees).mapToObj(i -> createEmployeeDTO()).map(e -> {
             e.setEmployeeSkills(activities);
@@ -306,13 +308,6 @@ public class CritterFunctionalTest {
             return petController.savePet(p).getBody().getPetId();
         }).collect(Collectors.toList());
         return scheduleController.createSchedule(createScheduleDTO(petIds, employeeIds, date, activities)).getBody();
-    }
-
-    private static void compareSchedules(ScheduleDTO sched1, ScheduleDTO sched2) {
-        Assertions.assertEquals(sched1.getPetIds(), sched2.getPetIds());
-        Assertions.assertEquals(sched1.getActivities(), sched2.getActivities());
-        Assertions.assertEquals(sched1.getEmployeeIds(), sched2.getEmployeeIds());
-        Assertions.assertEquals(sched1.getScheduleDate(), sched2.getScheduleDate());
     }
 
 }
