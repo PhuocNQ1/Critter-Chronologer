@@ -394,8 +394,8 @@
           {
             "key": "Content-Type",
             "name": "Content-Type",
-            "value": "application/json",
-            "type": "text"
+            "type": "text",
+            "value": "application/json"
           }
         ],
         "body": {
@@ -408,15 +408,14 @@
           }
         },
         "url": {
-          "raw": "http://localhost:8082/user/customer",
+          "raw": "http://localhost:8082/pet",
           "protocol": "http",
           "host": [
             "localhost"
           ],
           "port": "8082",
           "path": [
-            "user",
-            "customer"
+            "pet"
           ]
         }
       },
